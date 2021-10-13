@@ -4,6 +4,8 @@ import json
 from datetime import timezone, datetime
 import configparser
 import os.path
+import argparse
+import sys
 
 def get_json_from_url(url):
     response = requests.get(url)
@@ -29,7 +31,7 @@ def notify_telegram_group(form, subreddit, permalink, content):
 
 
 def process_submission(all_posts):
-    search_list = ["enteio", "ente.io", "photos", "privacy"]
+
 
     if "title" in vars(all_posts):
         normalized_text = all_posts.title.lower()
@@ -67,7 +69,7 @@ def read_from_file(filename):
 
 
 cfg = configparser.ConfigParser()
-cfg.read('example.ini')
+cfg.read('/Users/mansibudhiraja/PycharmProjects/reddit_scraper/venv/example.ini')
 
 client_id = cfg.get('KEYS', "client_id")
 secret_key = cfg.get('KEYS', "secret_key")
@@ -83,9 +85,22 @@ reddit = praw.Reddit(
     password=password,
 )
 
-subreddit = reddit.subreddit("testmansi")
-stream = praw.models.util.stream_generator(lambda **kwargs: get_submissions_and_comments(subreddit, **kwargs))
 
+try:
+    parser = argparse.ArgumentParser("add subreddits & search words, example: -subreddit -search \n")
+    parser.add_argument("-subreddit", type=str, nargs='+', help="add subreddits to search", dest="subreddit_list")
+    parser.add_argument("-search", type=str, nargs='+', help="add words to search", dest="search_list")
+    args = parser.parse_args()
+    subreddit_list = "+".join(args.subreddit_list)
+    search_list = args.search_list
+except:
+    e = sys.exc_info()
+    print(e)
+
+
+
+subreddit = reddit.subreddit(subreddit_list)
+stream = praw.models.util.stream_generator(lambda **kwargs: get_submissions_and_comments(subreddit, **kwargs))
 filename="timestamp.txt"
 
 if not os.path.exists(filename):

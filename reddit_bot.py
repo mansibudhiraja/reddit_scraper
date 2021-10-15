@@ -103,7 +103,7 @@ except:
 
 subreddit = reddit.subreddit(subreddit_list)
 stream = praw.models.util.stream_generator(lambda **kwargs: get_submissions_and_comments(subreddit, **kwargs))
-filename="timestamp.txt"
+filename="last_sync_timestamp.txt"
 
 # set the last_sync_time for the ist run
 if not os.path.exists(filename):

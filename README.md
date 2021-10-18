@@ -23,6 +23,13 @@ Run the script:
 2. pass argument as: python3 reddit_bot.py -sub "subredditname1" -search "keyword1"
 
 
+config.ini:
+[KEYS]
+telegram_key= user_telegram_key
+client_id= reddit_client_id
+secret_key=reddit_secret_key
+username=reddit_username
+password=reddit_password
 
 
 

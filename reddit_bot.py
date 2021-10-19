@@ -6,6 +6,7 @@ import configparser
 import os
 import argparse
 import sys
+import re
 
 def get_json_from_url(url):
     response = requests.get(url)
@@ -38,7 +39,8 @@ def process_submission(all_posts):
         type_post = "comment"
 
     for word in search_list:
-        if word in normalized_text:
+        pattern = r'\b' + word + r'\b'
+        if re.search(pattern, normalized_text):
             notify_telegram_group(type_post, all_posts.subreddit, all_posts.permalink, normalized_text)
     last_timestamp = datetime.now()
     set_last_sync_time(filename, last_timestamp)
@@ -81,7 +83,7 @@ password = cfg.get('KEYS', "password")
 telegram_key = cfg.get('KEYS', "telegram_key")
 
 reddit = praw.Reddit(
-    user_agent="my user agent",
+    user_agent="keyword",
     client_id=client_id,
     client_secret=secret_key,
     username=username,
@@ -100,7 +102,8 @@ except:
     e = sys.exc_info()
     print(e)
 
-
+print(subreddit_list)
+print(search_list)
 
 subreddit = reddit.subreddit(subreddit_list)
 stream = praw.models.util.stream_generator(lambda **kwargs: get_submissions_and_comments(subreddit, **kwargs))

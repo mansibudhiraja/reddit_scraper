@@ -23,7 +23,8 @@ def notify_telegram_group(form, subreddit, permalink, content):
     # extract chat_id for the group where you want to send the notifications from get_updates api call
     # all_messages = get_json_from_url(updates_url)
     # print(all_messages)
-    chat_id = "-689248984"
+    # chat_id = "-689248984"  #test ID
+    chat_id = "-638366714"
     message = 'Type: {} \nsubreddit: {} \n\nurl: {} \n\ncontent: {}'.format(form, subreddit, url, content)
     message_url = "https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}".format(BOT_TOKEN, chat_id, message)
     get_json_from_url(message_url)

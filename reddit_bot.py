@@ -63,7 +63,7 @@ def process_submission(all_posts):
             if normalized_text not in unique_posts:
                 unique_posts[normalized_text] = 1
                 notify_telegram_group(type_post, all_posts.subreddit, all_posts.permalink, normalized_text)
-    last_timestamp = datetime.now()
+    last_timestamp = datetime.now(timezone.utc)
     set_last_sync_time(filename, last_timestamp)
     return
 
@@ -88,7 +88,7 @@ def set_last_sync_time(filename, last_timestamp_datetime):
 
 def get_last_sync_time(filename):
     if not os.path.exists(filename):
-        return datetime.now()
+        return datetime.now(timezone.utc)
     with open(filename, 'r') as file:
         data = file.read()
         js = json.loads(data)
@@ -139,7 +139,7 @@ try:
 
     # set the last_sync_time for the ist run
     if not os.path.exists(filename):
-        last_timestamp = datetime.now()
+        last_timestamp = datetime.now(timezone.utc)
         set_last_sync_time(filename, last_timestamp)
         logger.info("Successfully added last sync time for the first run")
 

@@ -50,19 +50,24 @@ def notify_telegram_group(form, subreddit, permalink, content):
 
 def process_submission(all_posts):
     unique_posts = {}
+    normalized_text = []
     if "title" in vars(all_posts):
-        normalized_text = all_posts.title.lower()
+        if "selftext" in vars(all_posts):   
+            normalized_text.append(all_posts.selftext.lower())
+        normalized_text.append(all_posts.title.lower())
         type_post ="submission"
     if "body" in vars(all_posts):
-        normalized_text = all_posts.body.lower()
+        normalized_text.append(all_posts.body.lower())
         type_post = "comment"
 
+ 
     for word in search_list:
         pattern = r'\b' + word + r'\b'
-        if re.search(pattern, normalized_text):
-            if normalized_text not in unique_posts:
-                unique_posts[normalized_text] = 1
-                notify_telegram_group(type_post, all_posts.subreddit, all_posts.permalink, normalized_text)
+        for text in normalized_text:
+            if re.search(pattern, text):
+                if text not in unique_posts:
+                    unique_posts[text] = 1
+                    notify_telegram_group(type_post, all_posts.subreddit, all_posts.permalink, text)
     last_timestamp = datetime.now(timezone.utc)
     set_last_sync_time(filename, last_timestamp)
     return

@@ -38,7 +38,7 @@ def notify_telegram_group(form, subreddit, permalink, content, created_utc):
     BOT_TOKEN = telegram_key
     updates_url = "https://api.telegram.org/bot{}/getUpdates".format(BOT_TOKEN)
     url = "https://www.reddit.com" + permalink
-    created_time = datetime.fromtimestamp(created_utc).strftime('%Y-%m-%d %H:%M:%S')
+    created_time = datetime.utcfromtimestamp(created_utc).strftime('%Y-%m-%d %H:%M:%S')
     
     # extract chat_id for the group where you want to send the notifications from get_updates api call
     # all_messages = get_json_from_url(updates_url)

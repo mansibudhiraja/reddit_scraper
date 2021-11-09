@@ -34,16 +34,17 @@ def get_json_from_url(url):
     return js
 
 
-def notify_telegram_group(form, subreddit, permalink, content):
+def notify_telegram_group(form, subreddit, permalink, content, created_utc):
     BOT_TOKEN = telegram_key
     updates_url = "https://api.telegram.org/bot{}/getUpdates".format(BOT_TOKEN)
     url = "https://www.reddit.com" + permalink
-
+    created_time = datetime.fromtimestamp(created_utc).strftime('%Y-%m-%d %H:%M:%S')
+    
     # extract chat_id for the group where you want to send the notifications from get_updates api call
     # all_messages = get_json_from_url(updates_url)
     # print(all_messages)
     chat_id = "-638366714"
-    message = 'Type: {} \nsubreddit: {} \n\nurl: {} \n\ncontent: {}'.format(form, subreddit, url, content)
+    message = 'Type: {} \nsubreddit: {} \ncreated_time: {} \n\n url: {} \n\n  content: {}'.format(form, subreddit,created_time, url,  content)
     message_url = "https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}".format(BOT_TOKEN, chat_id, message)
     get_json_from_url(message_url)
 
@@ -52,12 +53,15 @@ def process_submission(all_posts):
     unique_posts = {}
     normalized_text = []
     if "title" in vars(all_posts):
-        if "selftext" in vars(all_posts):   
-            normalized_text.append(all_posts.selftext.lower())
         normalized_text.append(all_posts.title.lower())
-        type_post ="submission"
+        logger.info("found a submission")
+        if "selftext" in vars(all_posts):
+            normalized_text.append(all_posts.selftext.lower())
+            logger.info("found submission with additional info")
+        type_post = "submission"
     if "body" in vars(all_posts):
         normalized_text.append(all_posts.body.lower())
+        logger.info("found comment !")
         type_post = "comment"
 
  
@@ -67,7 +71,7 @@ def process_submission(all_posts):
             if re.search(pattern, text):
                 if text not in unique_posts:
                     unique_posts[text] = 1
-                    notify_telegram_group(type_post, all_posts.subreddit, all_posts.permalink, text)
+                    notify_telegram_group(type_post, all_posts.subreddit, all_posts.permalink, text, all_posts.created_utc)
     last_timestamp = datetime.now(timezone.utc)
     set_last_sync_time(filename, last_timestamp)
     return

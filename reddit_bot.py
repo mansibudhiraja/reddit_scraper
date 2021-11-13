@@ -52,14 +52,12 @@ def notify_telegram_group(form, subreddit, permalink, content, created_utc):
 def process_submission(all_posts):
     unique_posts = {}
     normalized_text = []
-    if "title" in vars(all_posts):
+    if "comment_limit" in vars(all_posts):
         normalized_text.append(all_posts.title.lower())
-        logger.info("found a submission")
-        if "selftext" in vars(all_posts):
-            normalized_text.append(all_posts.selftext.lower())
-            logger.info("found submission with additional info")
+        normalized_text.append(all_posts.selftext.lower())
+        logger.info("found submission with additional info")
         type_post = "submission"
-    if "body" in vars(all_posts):
+    if "_replies" in vars(all_posts):
         normalized_text.append(all_posts.body.lower())
         logger.info("found comment !")
         type_post = "comment"

@@ -50,7 +50,6 @@ def notify_telegram_group(form, subreddit, permalink, content, created_utc):
 
 
 def process_submission(all_posts):
-    unique_posts = {}
     normalized_text = []
     if "comment_limit" in vars(all_posts):
         normalized_text.append(all_posts.title.lower())
@@ -136,7 +135,8 @@ try:
         e = sys.exc_info()
         logger.error(e)
 
-
+    # this map stores all the unique submissions and comments
+    unique_posts={} 
     subreddit = reddit.subreddit(subreddit_list)
     logger.info("Sucesssfully fetched subreddit")
     stream = praw.models.util.stream_generator(lambda **kwargs: get_submissions_and_comments(subreddit, **kwargs))
